@@ -38,10 +38,11 @@ export const games: Record<
     gameInterface?: GameInterface;
     observers: Array<{ id: number; callback: GameEventCallback }>;
     nextObserverId: number;
+    debug: boolean;
   }
 > = {};
 
-export function createGame(): string {
+export function createGame(debug = false): string {
   let gameId: string;
   do {
     gameId = generateSlug();
@@ -50,6 +51,7 @@ export function createGame(): string {
     playerNames: [],
     observers: [],
     nextObserverId: 0,
+    debug,
   };
   games[gameId] = gameEntry;
   return gameId;
@@ -59,10 +61,14 @@ export function gameExists(gameId: string): boolean {
   return games[gameId] !== undefined;
 }
 
+export function gameIsDebug(gameId: string): boolean {
+  return games[gameId] !== undefined && games[gameId].debug;
+}
+
 export async function addPlayer(
   gameId: string,
   name: string,
-  beforeNotifyingCallback: (playerId: number) => PromiseLike<void>
+  beforeNotifyingCallback?: (playerId: number) => PromiseLike<void>
 ): Promise<number> {
   const game = games[gameId];
   if (game) {
@@ -74,7 +80,9 @@ export async function addPlayer(
       } else {
         game.playerNames.push(name);
         const playerId = game.playerNames.length - 1;
-        await beforeNotifyingCallback(playerId);
+        if (beforeNotifyingCallback !== undefined) {
+          await beforeNotifyingCallback(playerId);
+        }
         notifyListeners(gameId, GameEvent.PlayerAdded, { id: playerId, name });
         return playerId;
       }
@@ -152,6 +160,7 @@ export function getPublicState(gameId: string) {
     } else {
       return {
         started: true as const,
+        isDebug: game.debug ?? undefined,
         ...game.gameInterface.getPublicState(),
       };
     }
@@ -200,6 +209,16 @@ export function registerUpdateListener(
   } else {
     throw new GameError(GameErrorReason.GameNotFound);
   }
+}
+
+export function createDebugGame() {
+  const gameId = createGame(true);
+  addPlayer(gameId, "Player 1");
+  addPlayer(gameId, "Player 2");
+  addPlayer(gameId, "Player 3");
+  addPlayer(gameId, "Player 4");
+  startGame(gameId);
+  return gameId;
 }
 
 function notifyListeners<E extends GameEvent>(

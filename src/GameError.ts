@@ -7,6 +7,8 @@ export enum GameErrorReason {
   GameAlreadyStarted = "GAME_ALREADY_STARTED",
   NotEnoughPlayers = "NOT_ENOUGH_PLAYERS",
   TooManyPlayers = "TOO_MANY_PLAYERS",
+  InvalidArgument = "INVALID_ARGUMENT",
+  GameIsNotDebug = "GAME_IS_NOT_DEBUG",
   UnknownReason = "UNKNOWN_REASON",
 }
 

@@ -47,6 +47,11 @@ websocketServer.on("connection", function connection(connection, req: Request) {
         );
       });
     });
+
+    connection.on("message", (data) => {
+      console.log(data);
+    });
+
     connection.on("close", () => handler.unregister());
   } else {
     connection.close(
