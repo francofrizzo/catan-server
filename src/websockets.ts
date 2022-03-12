@@ -61,12 +61,10 @@ export const setupWebsockets = (server: Server) => {
     session(req, {} as Response, () => {
       const gameId = parseUrl(req.url);
       if (gameId) {
-        console.log(`Websockets connection set up: ${req.url}`);
         websocketServer.handleUpgrade(req, socket, head, (websocket) => {
           websocketServer.emit("connection", websocket, req);
         });
       } else {
-        console.error(`Couldn't respond to websockets request on: ${req.url}`);
         socket.end();
       }
     });
