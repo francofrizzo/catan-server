@@ -34,7 +34,7 @@ router.post("/game/:gameId/player", async (req, res) => {
           await req.session.save();
         }
       );
-      return games.getPrivateState(gameId, playerId);
+      res.json(games.getPrivateState(gameId, playerId));
     } catch (err: unknown) {
       handleError(err, res);
     }
