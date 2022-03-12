@@ -64,6 +64,9 @@ export const setupWebsockets = (server: Server) => {
         websocketServer.handleUpgrade(req, socket, head, (websocket) => {
           websocketServer.emit("connection", websocket, req);
         });
+      } else {
+        console.error(`Couldn't respond to websockets request on: ${req.url}`);
+        socket.end();
       }
     });
   });
