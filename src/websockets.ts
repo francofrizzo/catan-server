@@ -11,7 +11,7 @@ const websocketServer = new WebSocket.Server({
 });
 
 const parseUrl = (url: string): string | null => {
-  const expectedUrl = /^\/game\/([a-z0-9-]+)\/updates$/;
+  const expectedUrl = /\/game\/([a-z0-9-]+)\/updates$/;
 
   const match = expectedUrl.exec(url);
   if (match !== null) {
