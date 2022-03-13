@@ -63,8 +63,9 @@ router.post("/game/:gameId/player", async (req, res) => {
 
 router.post("/game/:gameId/start", (req, res) => {
   const gameId = req.params.gameId;
+  const autoCollect = req.body.autoCollect;
   try {
-    games.startGame(gameId);
+    games.startGame(gameId, autoCollect);
     res.sendStatus(200);
   } catch (err: unknown) {
     handleError(err, res);

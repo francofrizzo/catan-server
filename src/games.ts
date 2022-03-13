@@ -92,7 +92,7 @@ export async function addPlayer(
   }
 }
 
-export function startGame(gameId: string): void {
+export function startGame(gameId: string, autoCollect?: boolean): void {
   const game = games[gameId];
   if (game) {
     if (game.playerNames.length === 3 || game.playerNames.length === 4) {
@@ -100,7 +100,7 @@ export function startGame(gameId: string): void {
         playerNames: game.playerNames as
           | [string, string, string]
           | [string, string, string, string],
-        autoCollect: false,
+        autoCollect: autoCollect !== undefined ? autoCollect : game.debug,
       });
       gameInterface.afterAction((_, action, player, args) => {
         notifyListeners(gameId, GameEvent.ActionExecuted, {
