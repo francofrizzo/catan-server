@@ -10,12 +10,14 @@ import { GameError, GameErrorReason } from "./GameError";
 
 enum GameEvent {
   PlayerAdded = "PLAYER_ADDED",
+  PlayerRemoved = "PLAYER_REMOVED",
   GameStarted = "GAME_STARTED",
   ActionExecuted = "ACTION_EXECUTED",
 }
 
 type GameEventRegistry = {
   [GameEvent.PlayerAdded]: { id: number; name: string };
+  [GameEvent.PlayerRemoved]: { id: number; name: string };
   [GameEvent.GameStarted]: Record<string, never>;
   [GameEvent.ActionExecuted]: {
     action: Action;
@@ -87,6 +89,23 @@ export async function addPlayer(
         return playerId;
       }
     }
+  } else {
+    throw new GameError(GameErrorReason.GameNotFound);
+  }
+}
+
+export function removePlayer(gameId: string, playerId: number): void {
+  const game = games[gameId];
+  if (game) {
+    if (game.gameInterface !== undefined) {
+      throw new GameError(GameErrorReason.GameAlreadyStarted);
+    }
+    if (playerId < 0 || playerId >= game.playerNames.length) {
+      throw new GameError(GameErrorReason.InvalidArgument);
+    }
+    const name = game.playerNames[playerId];
+    game.playerNames.splice(playerId, 1);
+    notifyListeners(gameId, GameEvent.PlayerRemoved, { id: playerId, name });
   } else {
     throw new GameError(GameErrorReason.GameNotFound);
   }

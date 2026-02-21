@@ -61,6 +61,31 @@ router.post("/game/:gameId/player", async (req, res) => {
   }
 });
 
+router.delete("/game/:gameId/player/:playerId", (req, res) => {
+  const gameId = req.params.gameId;
+  const playerId = Number(req.params.playerId);
+  if (Number.isNaN(playerId)) {
+    res.status(422).json({ reason: GameErrorReason.InvalidArgument });
+    return;
+  }
+  try {
+    games.removePlayer(gameId, playerId);
+    // Clear session association for all players whose IDs shifted
+    if (req.session.games?.[gameId] !== undefined) {
+      const sessionPlayerId = req.session.games[gameId];
+      if (sessionPlayerId === playerId) {
+        delete req.session.games[gameId];
+      } else if (sessionPlayerId > playerId) {
+        req.session.games[gameId] = sessionPlayerId - 1;
+      }
+      req.session.save();
+    }
+    res.sendStatus(200);
+  } catch (err: unknown) {
+    handleError(err, res);
+  }
+});
+
 router.post("/game/:gameId/start", (req, res) => {
   const gameId = req.params.gameId;
   const autoCollect = req.body.autoCollect;
