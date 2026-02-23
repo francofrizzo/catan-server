@@ -9,7 +9,7 @@ import { setupWebsockets } from "./websockets";
 const app = express();
 const port = 7123;
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(session);
 
