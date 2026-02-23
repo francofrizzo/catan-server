@@ -5,6 +5,10 @@ export const session = expressSession({
   secret: "this is a very secret phrase",
   resave: false,
   saveUninitialized: true,
+  cookie: {
+    sameSite: "none",
+    secure: true,
+  },
 });
 
 export default session;

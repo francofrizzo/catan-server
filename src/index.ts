@@ -9,6 +9,7 @@ import { setupWebsockets } from "./websockets";
 const app = express();
 const port = 7123;
 
+app.set("trust proxy", 1);
 app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(session);
